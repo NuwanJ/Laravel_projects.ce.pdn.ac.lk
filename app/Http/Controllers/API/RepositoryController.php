@@ -11,7 +11,6 @@ use GrahamCampbell\GitHub\GitHubManager;
 
 class RepositoryController extends Controller
 {
-    protected $githubOrgName;
 
     // Contributors:  https://api.github.com/repos/nuwanj/FYP-simulator-gui/contributors
     //      avatar_url, html_url, login, contributions
@@ -31,7 +30,6 @@ class RepositoryController extends Controller
     {
         $this->client = $manager->connection();
         $this->paginator = new \Github\ResultPager($this->client);
-        $this->githubOrgName = env('GITHUB_ORGANIZATION');
     }
 
     // Show all repositories in an organization
@@ -59,7 +57,7 @@ class RepositoryController extends Controller
         $languages = Project::getRepoLanguages($organization, $title);
         $contributorArray = Project::getRepoContributors($organization, $title);
 
-        $resp = Project::prepareRepository($this->githubOrgName, $repo, '')[$repo['name']];
+        $resp = Project::prepareRepository($organization, $repo, '')[$repo['name']];
         $resp['contributors'] = ['count' => count($contributorArray), 'list' => $contributorArray];
         $resp['languages'] = $languages;
 
@@ -87,10 +85,11 @@ class RepositoryController extends Controller
             });
 
             $category_code = $c->category_code;
+            $org = $pattern['organization'];
 
-            $newRepositories = $filtered->mapWithKeys(function ($repo) use ($category_code) {
+            $newRepositories = $filtered->mapWithKeys(function ($repo) use ($org, $category_code) {
                 // This will filter out unwanted parameters from the repository list
-                return Project::prepareRepository($this->githubOrgName, $repo, $category_code);
+                return Project::prepareRepository($org, $repo, $category_code);
             });
 
             // merge search results
