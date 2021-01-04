@@ -9,12 +9,10 @@ use Illuminate\Support\Facades\Route;
 
 class ProjectController extends Controller
 {
-    protected $githubOrgName;
 
     public function __construct()
     {
-        //$this->middleware('auth');
-        $this->githubOrgName = env('GITHUB_ORGANIZATION');
+
     }
 
     public function index()
